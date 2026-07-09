@@ -12,13 +12,13 @@ args = parser.parse_args()
 
 file_path = args.route
 
-if os.path.isfile(file_path) & (file_path.endswith(".log") or file_path.endswith(".txt")):
+if os.path.isfile(file_path) and (file_path.endswith(".log") or file_path.endswith(".txt")):
     print("This is a valid file path")
 else:
     print("This isn't a valid file path")
     exit()
 num_lines = sum(1 for _ in open(file_path))
-pattern = r"(?P<ip_address>\d{1,3}.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\D{1,5})(?P<date>\[\d{2}\/\D{3}\/\d{4}\:(?P<hour>\d{2})\:\d{2}\:\d{2} \+0000\])\D(?P<message>\"\w+[^\"]+\")\D(?P<error_code>\d{1,3})\D(?P<byte_size>\d{1,10})\D{5}(?P<user_agent>\"[^\"]+\")"
+pattern = r"(?P<ip_address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\D{1,5})(?P<date>\[\d{2}\/\D{3}\/\d{4}\:(?P<hour>\d{2})\:\d{2}\:\d{2} \+0000\])\D(?P<message>\"\w+[^\"]+\")\D(?P<error_code>\d{1,3})\D(?P<byte_size>\d{1,10})\D{5}(?P<user_agent>\"[^\"]+\")"
 
 unique_ips = set()
 traffic = {}
