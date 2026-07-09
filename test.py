@@ -2,6 +2,7 @@ import argparse
 import os
 import re
 import time
+import json
 
 start_time = time.perf_counter()
 parser = argparse.ArgumentParser(prog='LogChecker',description='Hamravesh Task',add_help=False)
@@ -83,5 +84,39 @@ for hour,traffic in sorted_hour:
 
 end_time = time.perf_counter()
 execution_time = end_time - start_time
+
+
+output_data = {
+    "corrupted_lines": corrupt_lines,
+    "total_lines": num_lines,
+    "valid_requests": num_lines - corrupt_lines,
+    "unique_ip_count": len(unique_ips),
+    "error_rate_percent": round(true_error_rate, 2),
+    "top_10_ips_by_traffic": [
+        {
+            "ip": ip,
+            "bytes": info["bytes"],
+            "malicious_attempts": info["malicious_attemp"]
+        }
+        for ip, info in top_10
+    ],
+    "most_malicious_ip": {
+        "ip": most_malicious_ip,
+        "attempts": most_malicious_count
+    },
+    "top_10_hours_by_traffic": [
+        {
+            "hour": hour,
+            "traffic": traffic
+        }
+        for hour, traffic in sorted_hour
+    ],
+    "execution_time_seconds": round(execution_time, 2)
+}
+
+with open("output.json", "w") as json_file:
+    json.dump(output_data, json_file, indent=4)
+
+
 print("=" * 30)
 print("Program took %.2f seconds" %execution_time)
