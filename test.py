@@ -32,6 +32,8 @@ hour_traffic = {}
 errors= 0
 lines=0
 corrupt_lines = 0
+most_malicious_ip = None
+most_malicious_count = 0
 
 with open(file_path, "r") as file:
     for line in file:
@@ -58,35 +60,35 @@ with open(file_path, "r") as file:
             if bool(re.search("^4",match.group("error_code"))) :
                 errors+=1
                 traffic[match.group("ip_address")]["malicious_attemp"]+=1
+                if traffic[match.group("ip_address")]["malicious_attemp"] > most_malicious_count:
+                    most_malicious_count = traffic[match.group("ip_address")]["malicious_attemp"]
+                    most_malicious_ip = match.group("ip_address")
         #corrupt lines
         else:
             corrupt_lines+=1
 
 
 top_10 = sorted(traffic.items(), key=lambda item: item[1]["bytes"], reverse=True)[:10]
-top_10_malicious = sorted(traffic.items(), key=lambda item: item[1]["malicious_attemp"], reverse=True)[:10]
+sorted_hour = sorted(hour_traffic.items(), key=lambda item: item[1], reverse=True)[:10]
 true_error_rate = (errors/ (num_lines - corrupt_lines ) )*100
 print(f"Number of Corrupted Lines : {corrupt_lines}")
 print(f"Number of Lines(Requests) :{num_lines}")
 print(f"Number of Unique Ip addresses:{len(unique_ips)}")
 print("Error rate is (number of 5xx and 4xx requests):%.2f %%"%true_error_rate)
-print("==================================")
+print("=" * 30)
 print("Top 10 IPs by traffic:")
 for ip, info in top_10:
     print(ip, info["bytes"])
-print("==================================")
-print("Top 10 Ips with the most 4xx errors :")
-for ip, info in top_10_malicious:
-    print(ip, info["malicious_attemp"])
-
-
+print("=" * 30)
+print(f"The most malicious IP is: {most_malicious_ip} with {most_malicious_count} attempts")
+print("=" * 30)
 print(f"{'Hour of the day':<18} {'Traffic':>10}")
-print("-" * 30)
-for hour,traffic in hour_traffic.items():
+print("=" * 30)
+for hour,traffic in sorted_hour:
     print(f"{hour:<18} {traffic:>10}")
 
 end_time = time.perf_counter()
 execution_time = end_time - start_time
-print("==================================")
+print("=" * 30)
 print("Program took %.2f seconds" %execution_time)
 
