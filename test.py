@@ -4,39 +4,33 @@ import re
 import time
 
 start_time = time.perf_counter()
-
 parser = argparse.ArgumentParser(prog='LogChecker',description='Hamravesh Task',add_help=False)
 parser.add_argument('-r','--route',type=str,help='File directory')
-parser.add_argument('--top_n',default=0,type=int,help="just check the top requestions")
 
 
 args = parser.parse_args()
 
 file_path = args.route
-top_lines = args.top_n
 
 if os.path.isfile(file_path) & (file_path.endswith(".log") or file_path.endswith(".txt")):
     print("This is a valid file path")
 else:
     print("This isn't a valid file path")
     exit()
-
 num_lines = sum(1 for _ in open(file_path))
-print(num_lines)
-
 pattern = r"(?P<ip_address>\d{1,3}.\d{1,3}\.\d{1,3}\.\d{1,3})(?:\D{1,5})(?P<date>\[\d{2}\/\D{3}\/\d{4}\:(?P<hour>\d{2})\:\d{2}\:\d{2} \+0000\])\D(?P<message>\"\w+[^\"]+\")\D(?P<error_code>\d{1,3})\D(?P<byte_size>\d{1,10})\D{5}(?P<user_agent>\"[^\"]+\")"
 
 unique_ips = set()
 traffic = {}
 hour_traffic = {}
 errors= 0
-lines=0
 corrupt_lines = 0
 most_malicious_ip = None
 most_malicious_count = 0
 
 with open(file_path, "r") as file:
     for line in file:
+        
         match = re.search(pattern,line)
         if match is not None:
             #unique ips
@@ -91,4 +85,3 @@ end_time = time.perf_counter()
 execution_time = end_time - start_time
 print("=" * 30)
 print("Program took %.2f seconds" %execution_time)
-
